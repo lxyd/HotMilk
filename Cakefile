@@ -1,23 +1,61 @@
 fs           = require 'fs'
 path         = require 'path'
 
+dirSrc   = 'src'
+dirBuild = 'build'
+fnBare   = 'hotmilk.bare.js'
+fnBasic  = 'hotmilk.basic.js'
+fnBNofw  = 'hotmilk.b.nofw.js'
+
+
 option '-o', '--output [DIR]', 'directory for compiled code'
 
 task 'build', 'Rebuilds HoTMiLk', ->
   invoke('build:js')
 
-task 'build:js', 'Builds hotmilk.js into ./build (or --output)', (opts) ->
+task 'build:js', 'Builds all the hotmilk.js versions into #{dirBuild} (or --output)', (opts) ->
+  invoke('build:js/basic')
+  invoke('build:js/b_nofw')
+
+task 'build:js/bare', 'Build only bare version (DO NOT USER BARE VERSION IN YOUR PROJECTS)', (opts) ->
   CoffeeScript = require 'coffee-script'
 
-  indir = path.join(__dirname, 'src')
-  out = opts.output or 'build'
-  out = path.join(__dirname, out) unless out[0] = '/'
-  out = path.join(out, 'hotmilk.bare.js')
+  dirIn = path.join(__dirname, dirSrc)
+  dirOut = opts.output or dirBuild
+  dirOut = path.join(__dirname, dirOut) unless dirOut[0] = '/'
 
-  fs.readFile path.join(indir, 'hot.js'), 'utf8', (err, data_hot) ->
+  fs.readFile path.join(dirIn, 'hot.js'), 'utf8', (err, sHot) ->
     throw err if err
-    fs.readFile path.join(indir, 'milk.coffee'), 'utf8', (err, data_milk) ->
+    fs.readFile path.join(dirIn, 'milk.coffee'), 'utf8', (err, sMilk) ->
       throw err if err
-      fs.writeFile out, data_hot.replace('$milk.js$', CoffeeScript.compile(data_milk, bare:true).replace(/\n/g, '\n    ')), (err) ->
+      fs.writeFile path.join(dirOut, fnBare), sHot.replace('$milk.js$', CoffeeScript.compile(sMilk, bare:true).replace(/\n/g, '\n    ')), (err) ->
+        throw err if err
+ 
+task 'build:js/basic', 'Build only basic functionality: template management', (opts) ->
+  invoke('build:js/bare')
+
+  dirIn = path.join(__dirname, dirSrc)
+  dirOut = opts.output or dirBuild
+  dirOut = path.join(__dirname, dirOut) unless dirOut[0] = '/'
+
+  fs.readFile path.join(dirIn, 'basic.js'), 'utf8', (err, sWrap) ->
+    throw err if err
+    fs.readFile path.join(dirOut, fnBare), 'utf8', (err, sBare) ->
+      throw err if err
+      fs.writeFile path.join(dirOut, fnBasic), sWrap.replace('$hotmilk.bare.js$', sBare.replace(/\n/g, '\n    ')), (err) ->
+        throw err if err
+ 
+task 'build:js/b_nofw', 'Build for browser with no-framework (XMLHttpRequest and DomReady libs required)', (opts) ->
+  invoke('build:js/bare')
+
+  dirIn = path.join(__dirname, dirSrc)
+  dirOut = opts.output or dirBuild
+  dirOut = path.join(__dirname, dirOut) unless dirOut[0] = '/'
+
+  fs.readFile path.join(dirIn, 'b.nofw.js'), 'utf8', (err, sWrap) ->
+    throw err if err
+    fs.readFile path.join(dirOut, fnBare), 'utf8', (err, sBare) ->
+      throw err if err
+      fs.writeFile path.join(dirOut, fnBNofw), sWrap.replace('$hotmilk.bare.js$', sBare.replace(/\n/g, '\n    ')), (err) ->
         throw err if err
  

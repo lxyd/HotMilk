@@ -1,5 +1,5 @@
 /*
- * HoTMiLk - simple framework independent in-browser templating
+ * HotMilk - simple framework independent in-browser templating
  * library based on Milk - the CoffeeScript Mustache implementation
  * (https://github.com/pvande/Milk)
  *
@@ -323,11 +323,10 @@ var Milk = {};
 // Classes
 //
 
-// Template - is a string with a special class
+// Template - is just a wrapper for string
 var Template = function(template) {
-    return (template || '') + ''; // copy string
+    this.value = template;
 };
-Template.prototype = String.prototype;
 
 // use javascript inheritance mechanism to build a hierarchy of partial templates collections:
 //  var a = new PartialsCollection();  // a: {};
@@ -350,9 +349,9 @@ var TemplateNode = function TemplateNode(template, partials) {
     template = new Template(template);
     // create function which is instanceof TemplateNode in kinda indirect way
     var templatingFunction = function _(data) {
-        return Milk.render(template, data, function(partialName) {
+        return Milk.render(template.value, data, function(partialName) {
             if(_.$[partialName] && _.$[partialName] instanceof Template) {
-                return _.$[partialName];
+                return _.$[partialName].value;
             } else {
                 throw new Error('Unknown partial template: ' + partialName);
             }
@@ -513,21 +512,9 @@ var removePartialTemplate = function(path, partialName) {
     }
 };
 
-var grabTemplates = function() {
-    var ss = document.getElementsByTagName('script');
-    for(var i = 0; i < ss.length; i++) {
-        var s = ss[i], path;
-        if(s.type === 'text/x-mustache-template' && (path = s.getAttribute('data-hotmilk-path'))) {
-            // TODO: xhr load when src is set instead of text
-            addTemplate(path, s.text);
-        }
-    };
-};
-
 // expand hotmilk root with some properties
 HotMilk.$version = '0.1';
 HotMilk.$Milk = Milk;
 HotMilk.$addTemplate = addTemplate;
 HotMilk.$removeTemplate = removeTemplate;
-HotMilk.$grabTemplates = grabTemplates;
 
