@@ -1,8 +1,8 @@
 fs           = require 'fs'
 path         = require 'path'
 
-dirSrc   = './src'
-dirBuild = './build'
+dirSrc   = 'src'
+dirBuild = 'build'
 
 buildBare = (opts, fnBare, callback = null) ->
   CoffeeScript = require 'coffee-script'
@@ -44,17 +44,21 @@ task 'build', 'Rebuilds HotMilk', ->
   invoke('build:js')
   # TODO: build docs, build tests etc
 
-task 'build:js', "Builds all the hotmilk.js versions into #{dirBuild} (or --output)", (opts) ->
+task 'build:js', "Builds all the hotmilk.js versions into '#{dirBuild}' (or --output)", (opts) ->
   invoke('build:js/bare')
   invoke('build:js/basic')
-  invoke('build:js/b_nofw')
+  invoke('build:js/browser/nofw')
+  invoke('build:js/browser/jquery')
 
 task 'build:js/bare', 'Build only bare version (DO NOT USE IT IN YOUR PROJECTS)', (opts) ->
-  buildBare opts, 'hotlink.bare.js'
+  buildBare opts, 'hotmilk.bare.js'
  
 task 'build:js/basic', 'Build only basic functionality: template management', (opts) ->
   buildWrapped opts, 'basic.js', 'hotmilk.basic.js'
  
-task 'build:js/b_nofw', 'Build for browser with no-framework (DomReady lib required)', (opts) ->
-  buildWrapped opts, 'b.nofw.js', 'hotmilk.browser.nofw.js'
+task 'build:js/browser/nofw', 'Build for browser with no-framework (DomReady lib required)', (opts) ->
+  buildWrapped opts, 'browser.nofw.js', 'hotmilk.browser.nofw.js'
+
+task 'build:js/browser/jquery', 'Build for browser with jquery framework', (opts) ->
+  buildWrapped opts, 'browser.jquery.js', 'hotmilk.browser.jquery.js'
 
