@@ -42,13 +42,14 @@ option '-o', '--output [DIR]', 'directory for compiled code'
 
 task 'build', 'Rebuilds HotMilk', ->
   invoke('build:js')
-  # TODO: build docs, build tests etc
+  # TODO: docs, tests etc
 
 task 'build:js', "Builds all the hotmilk.js versions into '#{dirBuild}' (or --output)", (opts) ->
   invoke('build:js/bare')
   invoke('build:js/basic')
   invoke('build:js/browser/nofw')
   invoke('build:js/browser/jquery')
+  invoke('build:js/browser/mootools')
 
 task 'build:js/bare', 'Build only bare version (DO NOT USE IT IN YOUR PROJECTS)', (opts) ->
   buildBare opts, 'hotmilk.bare.js'
@@ -61,4 +62,7 @@ task 'build:js/browser/nofw', 'Build for browser with no-framework (DomReady lib
 
 task 'build:js/browser/jquery', 'Build for browser with jquery framework', (opts) ->
   buildWrapped opts, 'browser.jquery.js', 'hotmilk.browser.jquery.js'
+
+task 'build:js/browser/mootools', 'Build for browser with mootools framework', (opts) ->
+  buildWrapped opts, 'browser.mootools.js', 'hotmilk.browser.mootools.js'
 
