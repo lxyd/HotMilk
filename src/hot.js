@@ -1,5 +1,5 @@
 /*
- * HotMilk - simple framework independent in-browser templating
+ * HotMilk - simple framework independent template-management
  * library based on Milk - the CoffeeScript Mustache implementation
  * (https://github.com/pvande/Milk)
  *
