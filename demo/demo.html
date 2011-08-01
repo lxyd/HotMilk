@@ -2,104 +2,94 @@
 <html lang="en-US">
 	<head>
         <meta charset="utf-8">
-		<title>Terentiy Tatyanovich's design studio</title>
+        <title>HotMilk demo</title>
         <script src="../lib/domready.js"></script>
         <script src="../build/hotmilk.browser.nofw.js"></script>
-        <script type="text/x-mustache-template" data-hotmilk-path="catalog/product/details">
-            
+        <script type="text/x-mustache-template" data-hotmilk-path="books/list">
+            <h1>Books</h1>
+            <ul>
+                {{#items}}
+                <li>{{>item}}</li>
+                {{/items}}
+            </ul>
         </script>
-        <script type="text/x-mustache-template" data-hotmilk-path="catalog/service/details">
-            
+        <script type="text/x-mustache-template" data-hotmilk-path="books/list#item">
+            <a href='#' onclick='return showBook({{id}})'><b>{{title}}</b> by {{#author}}{{>author}}{{/author}}</a>
         </script>
-        <script type="text/x-mustache-template" data-hotmilk-path="catalog/product/list">
-            
+        <script type="text/x-mustache-template" data-hotmilk-path="books/details">
+            <h2>{{title}}</h2>
+            {{#author}}<p>Author: {{>author}}</p>{{/author}}
+            {{#pages}}<p>Pages: {{.}}</p>{{/pages}}
+            {{#pubyear}}<p>Year published: {{.}}</p>{{/pubyear}}
         </script>
-        <script type="text/x-mustache-template" data-hotmilk-path="catalog/service/list">
-            
+        <script type="text/x-mustache-template" data-hotmilk-path="movies/list">
+            <h1>Movies</h1>
+            <ul>
+                {{#items}}
+                <li>{{>item}}</li>
+                {{/items}}
+            </ul>
         </script>
-        <script type="text/x-mustache-template" data-hotmilk-path="catalog/product/list#item">
-            
+        <script type="text/x-mustache-template" data-hotmilk-path="movies/list#item">
+            <a href='#' onclick='return showMovie({{id}})'><b>{{title}}</b>, {{country}} {{year}} (by {{#director}}{{>author}}{{/director}})</a>
         </script>
-        <script type="text/x-mustache-template" data-hotmilk-path="catalog/service/list#item">
-            
+        <script type="text/x-mustache-template" data-hotmilk-path="movies/details">
+            <h2>{{title}}</h2>
+            {{#country}}<p>Country: {{.}}</p>{{/country}}
+            {{#director}}<p>Director: {{>author}}</p>{{/director}}
+            {{#year}}<p>Year: {{.}}</p>{{/year}}
         </script>
-        <script type="text/x-mustache-template" data-hotmilk-path="articles/news">
-            <h1>{{title}}</h1>
-			{{{htmlText}}}
-			{{#gallery.length}}
-				<div class='gallery'>
-					{{#gallery}}
-						{{>galleryItem}}
-					{{/gallery}}
-				</div>
-			{{/gallery.length}}
-        </script>
-        <script type="text/x-mustache-template" data-hotmilk-path="articles/portfolio">
-            <h1>{{title}}</h1>
-			{{#services.length}}
-				<div class='services-list'>
-					Services provided:
-					{{#services}}
-						{{>service}}
-					{{/services}}
-				</div>
-			{{/services.length}}
-			{{{htmlText}}}
-			{{#gallery.length}}
-				<div class='gallery'>
-					Demonstration:
-					{{#gallery}}
-						{{>galleryItem}}
-					{{/gallery}}
-				</div>
-			{{/gallery.length}}
-        </script>
-        <script type="text/x-mustache-template" data-hotmilk-path="articles#galleryItem">
-            <div class='gallery-item'>
-				<img src="{{src}}" alt="{{title}}"/>
-				<br/>
-				{{title}}
-			</div>
-        </script>
-        <script type="text/x-mustache-template" data-hotmilk-path="articles/portfolio#service">
-            <a href="/Catalog/Services/{{id}}">{{name}}</a>
+        <script type="text/x-mustache-template" data-hotmilk-path="#author">
+            {{#lastname}}
+                {{lastname}}{{#firstname}}, {{.}}{{/firstname}}
+            {{/lastname}}
+            {{^lastname}}
+                {{firstname}}
+            {{/lastname}}
         </script>
 		
 		<script type="text/javascript">
-			// domain model
-			var Portfolio = function() {
-				this.title = '';
-				this.htmlText = '';
-				this.services = [];
-				this.gallery = [];
-			};
-
-			var News = function() {
-				this.title = '';
-				this.htmlText = '';
-				this.gallery = [];
-			};
-
+            var books = [
+                { id: 1, title: 'Moby Dick: Or, The White Whale', pubyear: 1892, pages: 545, author: { lastname: 'Melville', firstname: 'Herman' } },
+                { id: 2, title: 'The Scarlet Letter: A Romance', pubyear: 1892, pages: 468, author: { lastname: 'Hawthorne', firstname: 'Nathaniel' } },
+                { id: 3, title: 'The Adventures of Tom Sawyer', pubyear: 1920, author: { lastname: 'Twain', firstname: 'Mark' } },
+                { id: 4, title: 'Alice\'s Adventures in Wonderland', author: { lastname: 'Carroll', firstname: 'Lewis' } },
+                { id: 5, title: 'On duties', author: { firstname: 'Cicero' } },
+                { id: 6, title: 'Frankenstein, or, The Modern Prometheus', pubyear: 1869, author: { lastname: 'Wollstonecraft Shelley', firstname: 'Mary' } }
+            ];
+            var movies = [
+                { id: 1, title: 'Forrest Gump', country: 'USA', year: '1994', director: { lastname: 'Zemeckis', firstname: 'Robert' } },
+                { id: 2, title: 'The Godfather', country: 'USA', year: '1972', director: { lastname: 'Ford Coppola', firstname: 'Francis' } },
+                { id: 3, title: 'Knockin\' on Heaven\'s Door', country: 'Germany, Belgium', year: 1997, director: { lastname: 'Jahn', firstname: 'Thomas' } }
+            ];
 			DomReady.ready(function() {
-				var p = new Portfolio();
-				p.title = 'Portfolio';
-				p.htmlText = '<p>строка 1</p><p>строка 2</p>';
-				p.services = [
-					{id: 1, name: 'design'},
-					{id: 2, name: 'pring'}
-				];
-				p.gallery = [
-					{src: 'imgs/a.png', title: 'Иллюстрация 1'},
-					{src: 'imgs/b.png', title: 'Иллюстрация 2'},
-					{src: 'imgs/c.png', title: 'Иллюстрация 3'}
-				];
-				
-				document.getElementById('render').innerHTML = HotMilk.articles.portfolio(p);
+                document.getElementById('books').innerHTML = HotMilk.books.list({items: books});
+                document.getElementById('movies').innerHTML = HotMilk.movies.list({items: movies});
 			});
+            var showBook = function(id) {
+                for(var i = 0; i < books.length; i++) {
+                    if(books[i].id === id) {
+                        document.getElementById('details').innerHTML = HotMilk.books.details(books[i]);
+                        break;
+                    }
+                }
+                return false;
+            };
+            var showMovie = function(id) {
+                for(var i = 0; i < movies.length; i++) {
+                    if(movies[i].id === id) {
+                        document.getElementById('details').innerHTML = HotMilk.movies.details(movies[i]);
+                        break;
+                    }
+                }
+                return false;
+            };
 		</script>
 	</head>
 	<body>
-		<div id="render">
-		</div>
+		<div id="books"></div>
+		<div id="movies"></div>
+        <hr/>
+        <div id="details"></div>
 	</body>
 </html>

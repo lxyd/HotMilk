@@ -401,7 +401,7 @@ var nodeBuildPath = function(node, path) {
         } else if(node[path[i]] instanceof GroupNode) {
             node = node[path[i]];
         } else {
-            throw new Error('Cannot build path: node already exists and is not a GroupNode');
+            throw new Error('Cannot build path: node ' + path.join('/') + ' already exists under and is not a GroupNode');
         }
     }
     return node;
@@ -450,7 +450,7 @@ var addNormalTemplate = function(root, path, template) {
         if(node[name] instanceof GroupNode && nodeIsEmpty(node[name])) {
             node[name] = new TemplateNode(template, node[name].$);
         } else {
-            throw new Error('Cannot create template: node already exists');
+            throw new Error('Cannot create template: node ' + path.join('/') + ' already exists');
         }
     } else {
         // NOTE: new templating node will have partials derived from its parent node's partials
@@ -461,7 +461,7 @@ var addNormalTemplate = function(root, path, template) {
 var addPartialTemplate = function(root, path, partialName, template) {
     var node = nodeNavigatePath(root, path) || nodeBuildPath(root, path);
     if(hasOwnProperty(node.$, partialName)) {
-        throw new Error('Cannot create partial template: already exists');
+        throw new Error('Cannot create partial template ' + path.join('/') + '#' + partialName + ': already exists');
     }
     node.$[partialName] = new Template(template);
 };
@@ -498,7 +498,7 @@ var removeNormalTemplate = function(root, path) {
         node[name] = new GroupNode(node[name].$);
         nodeCleanPath(root, path); 
     } else {
-        throw new Error('Template does not exist');
+        throw new Error('Template ' + path.join('/') + ' does not exist');
     }
 };
 
@@ -508,7 +508,7 @@ var removePartialTemplate = function(root, path, partialName) {
         delete node.$[partialName];
         nodeCleanPath(root, path);
     } else {
-        throw new Error('Template does not exist');
+        throw new Error('Template ' + path.join('/') + '#' + partialName + ' does not exist');
     }
 };
 
