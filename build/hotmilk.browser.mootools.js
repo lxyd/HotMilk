@@ -1,17 +1,17 @@
 /*
- * HotMilk - simple framework-independent template management
- * library based on Milk - the CoffeeScript Mustache implementation
- * (https://github.com/pvande/Milk)
+ * HotMilk - simple framework-independent hierarchical template management
+ * library based on Milk (the CoffeeScript Mustache implementation,
+ * https://github.com/pvande/Milk)
  *
  * Inspired by ICanHaz http://icanhazjs.com/
  *
  * AUTHORS
- *   Alexey <lxyd> Dubinin
+ *   Alexey Dubinin
  *   Pieter van de Bruggen (original Milk library)
  *
  * LICENSE
  *   milk.coffee is distributed under the GIFT license, v2
- *   Other souce files are under MIT license
+ *   Other source files are under the MIT license
  *
  * URL
  *   https://github.com/lxyd/HotMilk
