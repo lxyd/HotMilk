@@ -62,10 +62,10 @@
                 { id: 2, title: 'The Godfather', country: 'USA', year: '1972', director: { lastname: 'Ford Coppola', firstname: 'Francis' } },
                 { id: 3, title: 'Knockin\' on Heaven\'s Door', country: 'Germany, Belgium', year: 1997, director: { lastname: 'Jahn', firstname: 'Thomas' } }
             ];
-			DomReady.ready(function() {
+            DomReady.ready(function() {
                 document.getElementById('books').innerHTML = HotMilk.books.list({items: books});
                 document.getElementById('movies').innerHTML = HotMilk.movies.list({items: movies});
-			});
+            });
             var showBook = function(id) {
                 for(var i = 0; i < books.length; i++) {
                     if(books[i].id === id) {
