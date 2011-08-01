@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en-US">
+	<head>
+        <meta charset="utf-8">
+		<title>Terentiy Tatyanovich's design studio</title>
+        <script src="../lib/domready.js"></script>
+        <script src="../build/hotmilk.browser.nofw.js"></script>
+        <script type="text/x-mustache-template" data-hotmilk-path="catalog/product/details">
+            
+        </script>
+        <script type="text/x-mustache-template" data-hotmilk-path="catalog/service/details">
+            
+        </script>
+        <script type="text/x-mustache-template" data-hotmilk-path="catalog/product/list">
+            
+        </script>
+        <script type="text/x-mustache-template" data-hotmilk-path="catalog/service/list">
+            
+        </script>
+        <script type="text/x-mustache-template" data-hotmilk-path="catalog/product/list#item">
+            
+        </script>
+        <script type="text/x-mustache-template" data-hotmilk-path="catalog/service/list#item">
+            
+        </script>
+        <script type="text/x-mustache-template" data-hotmilk-path="articles/news">
+            <h1>{{title}}</h1>
+			{{{htmlText}}}
+			{{#gallery.length}}
+				<div class='gallery'>
+					{{#gallery}}
+						{{>galleryItem}}
+					{{/gallery}}
+				</div>
+			{{/gallery.length}}
+        </script>
+        <script type="text/x-mustache-template" data-hotmilk-path="articles/portfolio">
+            <h1>{{title}}</h1>
+			{{#services.length}}
+				<div class='services-list'>
+					Services provided:
+					{{#services}}
+						{{>service}}
+					{{/services}}
+				</div>
+			{{/services.length}}
+			{{{htmlText}}}
+			{{#gallery.length}}
+				<div class='gallery'>
+					Demonstration:
+					{{#gallery}}
+						{{>galleryItem}}
+					{{/gallery}}
+				</div>
+			{{/gallery.length}}
+        </script>
+        <script type="text/x-mustache-template" data-hotmilk-path="articles#galleryItem">
+            <div class='gallery-item'>
+				<img src="{{src}}" alt="{{title}}"/>
+				<br/>
+				{{title}}
+			</div>
+        </script>
+        <script type="text/x-mustache-template" data-hotmilk-path="articles/portfolio#service">
+            <a href="/Catalog/Services/{{id}}">{{name}}</a>
+        </script>
+		
+		<script type="text/javascript">
+			// domain model
+			var Portfolio = function() {
+				this.title = '';
+				this.htmlText = '';
+				this.services = [];
+				this.gallery = [];
+			};
+
+			var News = function() {
+				this.title = '';
+				this.htmlText = '';
+				this.gallery = [];
+			};
+
+			DomReady.ready(function() {
+				var p = new Portfolio();
+				p.title = 'Portfolio';
+				p.htmlText = '<p>строка 1</p><p>строка 2</p>';
+				p.services = [
+					{id: 1, name: 'design'},
+					{id: 2, name: 'pring'}
+				];
+				p.gallery = [
+					{src: 'imgs/a.png', title: 'Иллюстрация 1'},
+					{src: 'imgs/b.png', title: 'Иллюстрация 2'},
+					{src: 'imgs/c.png', title: 'Иллюстрация 3'}
+				];
+				
+				document.getElementById('render').innerHTML = HotMilk.articles.portfolio(p);
+			});
+		</script>
+	</head>
+	<body>
+		<div id="render">
+		</div>
+	</body>
+</html>

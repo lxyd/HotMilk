@@ -14,7 +14,7 @@
         for(var i = 0; i < ss.length; i++) {
             var s = ss[i], path;
             if(s.type === 'text/x-mustache-template' && (path = s.getAttribute('data-hotmilk-path'))) {
-                addTemplate(path, s.text);
+                HotMilk.$addTemplate(path, s.text);
             }
         };
     });

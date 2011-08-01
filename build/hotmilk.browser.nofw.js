@@ -1,26 +1,26 @@
+/*
+ * HotMilk - simple framework-independent template management
+ * library based on Milk - the CoffeeScript Mustache implementation
+ * (https://github.com/pvande/Milk)
+ *
+ * Inspired by ICanHaz http://icanhazjs.com/
+ *
+ * AUTHORS
+ *   Alexey <lxyd> Dubinin
+ *   Pieter van de Bruggen (original Milk library)
+ *
+ * LICENSE
+ *   milk.coffee is distributed under the GIFT license, v2
+ *   Other souce files are under MIT license
+ *
+ * URL
+ *   TODO:
+ */
 (function(window,document) {
     if(!window.DomReady) {
         throw new Error('HotMilk browser-nofw-version requires DomReady (http://code.google.com/p/domready/) to run');
     }
 
-    /*
-     * HotMilk - simple framework independent in-browser templating
-     * library based on Milk - the CoffeeScript Mustache implementation
-     * (https://github.com/pvande/Milk)
-     *
-     * Inspired by ICanHaz http://icanhazjs.com/
-     *
-     * AUTHORS
-     *   Alexey <lxyd> Dubinin
-     *   Pieter van de Bruggen (original Milk library)
-     *
-     * LICENSE
-     *   milk.coffee is distributed under the GIFT license, v2
-     *   Other souce files are under MIT license
-     *
-     * URL
-     *   TODO:
-     */
     
     var HotMilk;
     
@@ -259,7 +259,7 @@
                   _results = [];
                   for (_i = 0, _len = delimiters.length; _i < _len; _i++) {
                     d = delimiters[_i];
-                    _results.push(d.replace(escape, "\\$milk.js$"));
+                    _results.push(d.replace(escape, "\\$&"));
                   }
                   return _results;
                 })();
@@ -369,7 +369,7 @@
     
     // for the case user creates template 'hasOwnProperty'
     var hasOwnProperty = function(obj, propName) {
-        return Object.prototype.hasOwnProperty.apply(obj, [propName]);
+        return Object.prototype.hasOwnProperty.call(obj, propName);
     };
     
     var nodeIsEmpty = function(node) {
@@ -443,7 +443,7 @@
         };
     })();
     
-    var addNormalTemplate = function(path, template) {
+    var addNormalTemplate = function(root, path, template) {
         if(path.length === 0) {
             throw new Error('Cannot create template: template name must not be empty');
         }
@@ -463,7 +463,7 @@
         }
     };
     
-    var addPartialTemplate = function(path, partialName, template) {
+    var addPartialTemplate = function(root, path, partialName, template) {
         var node = nodeNavigatePath(root, path) || nodeBuildPath(root, path);
         if(hasOwnProperty(node.$, partialName)) {
             throw new Error('Cannot create partial template: already exists');
@@ -477,9 +477,9 @@
             throw new Error('Invalid template path: ' + strPath);
         }
         if(!path.partialName) {
-            addNormalTemplate(path.path, template);
+            addNormalTemplate(this, path.path, template);
         } else {
-            addPartialTemplate(path.path, path.partialName, template);
+            addPartialTemplate(this, path.path, path.partialName, template);
         }
     };
     
@@ -489,13 +489,13 @@
             throw new Error('Invalid template path: ' + strPath);
         }
         if(!path.partialName) {
-            removeNormalTemplate(path.path);
+            removeNormalTemplate(this, path.path);
         } else {
-            removePartialTemplate(path.path, path.partialName);
+            removePartialTemplate(this, path.path, path.partialName);
         }
     };
     
-    var removeNormalTemplate = function(path) {
+    var removeNormalTemplate = function(root, path) {
         var node = nodeNavigatePath(root, path.slice(0,-1)),
             name = path[path.length - 1];
         if(hasOwnProperty(node, name) && node[name] instanceof TemplateNode) {
@@ -507,7 +507,7 @@
         }
     };
     
-    var removePartialTemplate = function(path, partialName) {
+    var removePartialTemplate = function(root, path, partialName) {
         var node = nodeNavigatePath(root, path);
         if(node && hasOwnProperty(node.$, partialName)) {
             delete node.$[partialName];
@@ -520,9 +520,11 @@
     // expand hotmilk root with some properties
     HotMilk.$version = '0.1';
     HotMilk.$Milk = Milk;
-    HotMilk.$addTemplate = addTemplate;
-    HotMilk.$removeTemplate = removeTemplate;
     
+    GroupNode.prototype.$addTemplate = addTemplate;
+    GroupNode.prototype.$removeTemplate = removeTemplate;
+    TemplateNode.prototype.$addTemplate = addTemplate;
+    TemplateNode.prototype.$removeTemplate = removeTemplate;
     
 
     // do export like underscore.js do:
@@ -538,7 +540,7 @@
         for(var i = 0; i < ss.length; i++) {
             var s = ss[i], path;
             if(s.type === 'text/x-mustache-template' && (path = s.getAttribute('data-hotmilk-path'))) {
-                addTemplate(path, s.text);
+                HotMilk.$addTemplate(path, s.text);
             }
         };
     });

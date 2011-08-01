@@ -1,3 +1,25 @@
+sHead = """
+/*
+ * HotMilk - simple framework-independent template management
+ * library based on Milk - the CoffeeScript Mustache implementation
+ * (https://github.com/pvande/Milk)
+ *
+ * Inspired by ICanHaz http://icanhazjs.com/
+ *
+ * AUTHORS
+ *   Alexey <lxyd> Dubinin
+ *   Pieter van de Bruggen (original Milk library)
+ *
+ * LICENSE
+ *   milk.coffee is distributed under the GIFT license, v2
+ *   Other souce files are under MIT license
+ *
+ * URL
+ *   TODO:
+ */
+
+"""
+
 fs           = require 'fs'
 path         = require 'path'
 
@@ -15,9 +37,9 @@ buildBare = (opts, fnBare, callback = null) ->
     throw err if err
     fs.readFile path.join(dirIn, 'milk.coffee'), 'utf8', (err, sMilk) ->
       throw err if err
-      sBare = sHot.replace('$milk.js$', CoffeeScript.compile(sMilk, bare:true).replace(/\n/g, '\n    '))
+      sBare = sHot.replace('$milk.js$', -> CoffeeScript.compile(sMilk, bare:true).replace(/\n/g, '\n    '))
       if fnBare
-        fs.writeFile path.join(dirOut, fnBare), sBare, (err) ->
+        fs.writeFile path.join(dirOut, fnBare), sHead + sBare, (err) ->
           throw err if err
       if callback
           callback sBare
@@ -30,9 +52,9 @@ buildWrapped = (opts, fnWrapper, fnFinal, callback = null) ->
   buildBare opts, null, (sBare) ->
     fs.readFile path.join(dirIn, fnWrapper), 'utf8', (err, sWrap) ->
       throw err if err
-      sFinal = sWrap.replace('$hotmilk.bare.js$', sBare.replace(/\n/g, '\n    '))
+      sFinal = sWrap.replace('$hotmilk.bare.js$', -> sBare.replace(/\n/g, '\n    '))
       if fnFinal
-        fs.writeFile path.join(dirOut, fnFinal), sFinal, (err) ->
+        fs.writeFile path.join(dirOut, fnFinal), sHead + sFinal, (err) ->
           throw err if err
       if callback
         callback sFinal
