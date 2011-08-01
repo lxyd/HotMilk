@@ -14,7 +14,7 @@
  *   Other souce files are under MIT license
  *
  * URL
- *   TODO:
+ *   https://github.com/lxyd/HotMilk
  */
 (function(window,MooTools) {
     if(!MooTools) {
