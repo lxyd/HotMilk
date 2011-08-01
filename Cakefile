@@ -15,7 +15,7 @@ sHead = """
  *   Other souce files are under MIT license
  *
  * URL
- *   TODO:
+ *   https://github.com/lxyd/HotMilk
  */
 
 """
