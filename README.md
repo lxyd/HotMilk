@@ -54,7 +54,7 @@ You can add new template relatevely to the existing group or template:
 
 Templates and partials can be added in any order, so you can load templates asynchronously.
 
-Deleting templates is also possible: just call `HotMilk.$removeTemplate('path/to)`. Again, you can remove
+Deleting templates is also possible: just call `HotMilk.$removeTemplate('path/to')`. Again, you can remove
 templates in any order: the only one a a time will be removed leaving others untouched (even partials 
 will survive killing their parent and creating it again if needed).
 
@@ -84,7 +84,7 @@ just 'HotMilk'_
 
 You can write templates directly in your HTML-code as &lt;script&gt; tags:
 
-``` javascript
+``` html
     <script type="text/x-mustache-template" data-hotmilk-path="books/list#item">
         <a href='/books/{{id}})'><b>{{title}}</b> by {{#author}}{{>author}}{{/author}}</a>
     </script>
