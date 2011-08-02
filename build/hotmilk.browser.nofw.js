@@ -22,8 +22,6 @@
     }
 
     
-    var HotMilk;
-    
     //
     // import Milk
     //
@@ -324,11 +322,12 @@
         }
     })(Milk);
     
+    
     //
     // Classes
     //
     
-    // Template - is just a wrapper for string
+    // Template - is just a wrapper for a string
     var Template = function(template) {
         this.value = template;
     };
@@ -337,10 +336,10 @@
     //  var a = new PartialsCollection();  // a: {};
     //  a.t1 = "template 1"                // a.t1 === 'template 1'; a.hasOwnProperty('t1') === true;
     //  var b = new PartialsCollection(a); // b.t1 === 'template 1'; b.hasOwnProperty('t1') === false;
-    var PartialsCollection = function _(parentPartials) {
+    var PartialsCollection = function(parentPartials) {
         // create object which is instanceof PartialsCollection in kinda indirect way
         var ctor = function() {};
-        ctor.prototype = parentPartials || _.prototype;
+        ctor.prototype = parentPartials || PartialsCollection.prototype;
         return new ctor();
     };
     
@@ -353,12 +352,12 @@
     var TemplateNode = function TemplateNode(template, partials) {
         template = new Template(template);
         // create function which is instanceof TemplateNode in kinda indirect way
-        var templatingFunction = function _(data) {
+        var templatingFunction = function (data) {
             return Milk.render(template.value, data, function(partialName) {
-                if(_.$[partialName] && _.$[partialName] instanceof Template) {
-                    return _.$[partialName].value;
+                if(templatingFunction.$[partialName] && templatingFunction.$[partialName] instanceof Template) {
+                    return templatingFunction.$[partialName].value;
                 } else {
-                    throw new Error('Unknown partial template: ' + partialName);
+                    throw new Error("Unknown partial: " + partialName);
                 }
             });
         };
@@ -406,7 +405,7 @@
             } else if(node[path[i]] instanceof GroupNode) {
                 node = node[path[i]];
             } else {
-                throw new Error('Cannot build path: node ' + path.join('/') + ' already exists under and is not a GroupNode');
+                throw new Error("Couldn't build path " + path.join('/') + ": node already exists");
             }
         }
         return node;
@@ -414,15 +413,15 @@
     
     // recoursively clean path removing leafs of type GroupNode
     // which contain no TemplateNodes nor partials 
-    var nodeCleanPath = function _(node, path) {
+    var nodeCleanPath = function(node, path) {
         if(!path || path.length < 1) {
-            throw new Error('Cannot clean empty path');
+            throw new Error("Couldn't clean: path is empty");
         }
-        if(!node || !node.hasOwnProperty(path[0]) || !(node[path[0]] instanceof GroupNode)) {
-            throw new Error('Cannot navigate: node does not esist or is not a GroupNode');
+        if(!node || !hasOwnProperty(node, path[0]) || !(node[path[0]] instanceof GroupNode)) {
+            throw new Error("Couldn't clean: node does not esist or is not cleanable");
         }
         if(path.length > 1) {
-            _(node[path[0]], path.slice(1));
+            nodeCleanPath(node[path[0]], path.slice(1));
         }
         if(nodeIsEmpty(node[path[0]]) && partialsCollectionIsEmpty(node[path[0]].$)) {
             delete node[path[0]];
@@ -430,22 +429,20 @@
     };
     
     // HotMilk is the root node
-    var root = HotMilk = new GroupNode();
+    var HotMilk = new GroupNode();
     
-    var parsePath = (function(){
-        var pathRe = /^((?:[a-zA-Z_][a-zA-Z0-9$_]*\/)*[a-zA-Z_][a-zA-Z0-9$_]*)?(?:#([a-zA-Z$_][a-zA-Z0-9$_]*))?$/;
-        return function(pathStr) {
-            var res = pathRe.exec(pathStr);
-            return res && (res[1] || res[2]) ? {
-                path: res[1] ? res[1].split('/') : [],
-                partialName: res[2] || null /* '', null, undefined -> null */
-            } : null;
-        };
-    })();
+    var pathRe = /^((?:[a-zA-Z_][a-zA-Z0-9$_]*\/)*[a-zA-Z_][a-zA-Z0-9$_]*)?(?:#([a-zA-Z$_][a-zA-Z0-9$_]*))?$/;
+    var parsePath = function(pathStr) {
+    	var res = pathRe.exec(pathStr);
+    	return res && (res[1] || res[2]) ? {
+    		path: res[1] ? res[1].split('/') : [],
+    		partialName: res[2] || null /* '', null, undefined -> null */
+    	} : null;
+    };
     
     var addNormalTemplate = function(root, path, template) {
         if(path.length === 0) {
-            throw new Error('Cannot create template: template name must not be empty');
+            throw new Error("Couldn't create template: name must not be empty");
         }
         var node = nodeBuildPath(root, path.slice(0,-1)),
             name = path[path.length - 1];
@@ -455,7 +452,7 @@
             if(node[name] instanceof GroupNode && nodeIsEmpty(node[name])) {
                 node[name] = new TemplateNode(template, node[name].$);
             } else {
-                throw new Error('Cannot create template: node ' + path.join('/') + ' already exists');
+                throw new Error("Couldn't add template: node " + path.join('/') + " already exists");
             }
         } else {
             // NOTE: new templating node will have partials derived from its parent node's partials
@@ -466,7 +463,7 @@
     var addPartialTemplate = function(root, path, partialName, template) {
         var node = nodeNavigatePath(root, path) || nodeBuildPath(root, path);
         if(hasOwnProperty(node.$, partialName)) {
-            throw new Error('Cannot create partial template ' + path.join('/') + '#' + partialName + ': already exists');
+            throw new Error("Couldn't add partial: node " + path.join('/') + "#" + partialName + " already exists");
         }
         node.$[partialName] = new Template(template);
     };
@@ -474,7 +471,7 @@
     var addTemplate = function(strPath, template){
         var path = parsePath(strPath);
         if(!path) {
-            throw new Error('Invalid template path: ' + strPath);
+            throw new Error("Couldn't add template: path " + strPath + " is invalid");
         }
         if(!path.partialName) {
             addNormalTemplate(this, path.path, template);
@@ -486,7 +483,7 @@
     var removeTemplate = function(strPath) {
         var path = parsePath(strPath);
         if(!path) {
-            throw new Error('Invalid template path: ' + strPath);
+            throw new Error("Couldn't remove template: path " + strPath + " is invalid");
         }
         if(!path.partialName) {
             removeNormalTemplate(this, path.path);
@@ -503,7 +500,7 @@
             node[name] = new GroupNode(node[name].$);
             nodeCleanPath(root, path); 
         } else {
-            throw new Error('Template ' + path.join('/') + ' does not exist');
+            throw new Error("Couldn't remove template: path " + path.join('/') + " does not exist");
         }
     };
     
@@ -513,7 +510,7 @@
             delete node.$[partialName];
             nodeCleanPath(root, path);
         } else {
-            throw new Error('Template ' + path.join('/') + '#' + partialName + ' does not exist');
+            throw new Error("Couldn't remove template: path " + path.join('/') + "#" + partialName + " does not exist");
         }
     };
     
