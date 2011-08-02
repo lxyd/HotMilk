@@ -4,15 +4,15 @@ HotMilk v1.0
 About
 -----
 
-HotMilk is a hierarchical template-management library based on the [Milk](https://github.com/pvande/Milk) 
-by Pieter van de Bruggen (the [CoffeeScript](https://github.com/jashkenas/coffee-script) 
+HotMilk is a hierarchical template-management library based on the Pieter van de Bruggen's 
+[Milk](https://github.com/pvande/Milk) (the [CoffeeScript](https://github.com/jashkenas/coffee-script) 
 implementation of [Mustache](http://mustache.github.com/) templates).
 
 This work was inspired mostly by [ICanHaz](http://icanhazjs.com/) library and, indeed, is 
 just a generalization of its authors' ideas.
 
 HotMilk allows you to organize your templates and partials in a handy tree structure and use them
-as simple as calling functions.
+as easy as calling functions.
 
 
 Usage
