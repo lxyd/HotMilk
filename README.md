@@ -97,7 +97,7 @@ Just use "text/x-mustache-template" as your script type and provide template pat
 HTML5-data attribute "data-hotmilk-path".
 
 
-### Using bare Milk ###
+### Using cold Milk ###
 
 You still can access the Milk through `HotMilk.$Milk` if you want. The most obvious use case 
 for this is adding a global helper. Please note: there is almost no sense in adding global 
