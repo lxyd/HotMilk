@@ -511,7 +511,7 @@
     };
     
     // expand hotmilk root with some properties
-    HotMilk.$version = '0.1';
+    HotMilk.$version = '1.0';
     HotMilk.$Milk = Milk;
     
     GroupNode.prototype.$addTemplate = addTemplate;

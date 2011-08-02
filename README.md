@@ -1,15 +1,18 @@
-HotMilk
-=======
+HotMilk v1.0
+============
 
 About
 -----
 
-HotMilk is a template-management library based on the [Milk](https://github.com/pvande/Milk) 
-by Pieter van de Bruggen, the [CoffeeScript](https://github.com/jashkenas/coffee-script) 
-implementation of the [Mustache](http://mustache.github.com/) templates.
+HotMilk is a hierarchical template-management library based on the [Milk](https://github.com/pvande/Milk) 
+by Pieter van de Bruggen (the [CoffeeScript](https://github.com/jashkenas/coffee-script) 
+implementation of [Mustache](http://mustache.github.com/) templates).
 
-This work was inspired mostly by [ICanHaz](http://icanhazjs.com/) library and, indded, is 
+This work was inspired mostly by [ICanHaz](http://icanhazjs.com/) library and, indeed, is 
 just a generalization of its authors' ideas.
+
+HotMilk allows you to organize your templates and partials in a handy tree structure and use them
+as simple as calling functions.
 
 
 Usage
@@ -55,7 +58,7 @@ You can add new template relatevely to the existing group or template:
 Templates and partials can be added in any order, so you can load templates asynchronously.
 
 Deleting templates is also possible: just call `HotMilk.$removeTemplate('path/to')`. Again, you can remove
-templates in any order: the only one a a time will be removed leaving others untouched (even partials 
+templates in any order: the only one at a time will be removed leaving others untouched (even partials 
 will survive killing their parent and creating it again if needed).
 
 
@@ -71,7 +74,7 @@ will survive killing their parent and creating it again if needed).
 * Each path element (template name, group name, partial name) must be correct javascript identifier: 
   contain upper- and lowercase letters, digits, underscore and dollar and don't start with digit
 
-* Also, names must not start from dollar sign as it is used for HotMilk methods (partials could, actually)
+* Also, names must not start with dollar sign as it is used for HotMilk methods (partials could, actually)
 
 
 ### Template grabbing in browser ###
