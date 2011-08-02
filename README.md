@@ -22,11 +22,8 @@ HotMilk provides handy interface to invoke `Milk.render()` function, for example
 
 ``` javascript
     htmlText = HotMilk.greetings({ ... user ... });
-
     htmlText = HotMilk.books.list([ ... list of books ... ]);
-
     htmlText = HotMilk.books.details({ ... book ... });
-
     htmlText = HotMilk.movies.list([ ... list of movies ... ]);
 ```
 
@@ -34,9 +31,7 @@ To add a template, invoke `HotMilk.$addTemplate()` and pass it template path and
 
 ``` javascript
     HotMilk.$addTemplate('books/list', '... mustache template ...');
-
     HotMilk.$addTemplate('books/details', '... mustache template ...');
-
     HotMilk.$addTemplate('greetings', '... mustache template ...');
 ```
 
@@ -45,13 +40,9 @@ group of templates, or to all templates in your template set:
 
 ``` javascript
     HotMilk.$addTemplate('books/list#item', '...'); // for HotMilk.books.list() only
-
     HotMilk.$addTemplate('books#author', '...');    // for list and details templates
-
     HotMilk.$addTemplate('#price', '...');          // global partial template
-
     // partial "overloading"
-
     HotMilk.$addTemplate('movies#price', '...');    // movies will have their own price format
 ```
 
@@ -74,8 +65,7 @@ will survive killing their parent and creating it again if needed).
 
     ``` javascript
         HotMilk.$addTemplate('movies', '...');
-
-        HotMilk.$addTemplate('movies/details, '...'); // forbidden
+        HotMilk.$addTemplate('movies/details', '...'); // forbidden
     ```
 
 * Each path element (template name, group name, partial name) must be correct javascript identifier: 
@@ -96,9 +86,7 @@ You can write templates directly in your HTML-code as &lt;script&gt; tags:
 
 ``` javascript
     <script type="text/x-mustache-template" data-hotmilk-path="books/list#item">
-
         <a href='/books/{{id}})'><b>{{title}}</b> by {{#author}}{{>author}}{{/author}}</a>
-
     </script>
 ```
 
