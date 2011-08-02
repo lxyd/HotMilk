@@ -433,7 +433,7 @@
     var root = HotMilk = new GroupNode();
     
     var parsePath = (function(){
-        var pathRe = /^((?:\w[a-zA-Z0-9$_]*\/)*\w[a-zA-Z0-9$_]*)?(?:#(\w[a-zA-Z0-9$_]*))?$/;
+        var pathRe = /^((?:[a-zA-Z_][a-zA-Z0-9$_]*\/)*[a-zA-Z_][a-zA-Z0-9$_]*)?(?:#([a-zA-Z$_][a-zA-Z0-9$_]*))?$/;
         return function(pathStr) {
             var res = pathRe.exec(pathStr);
             return res && (res[1] || res[2]) ? {
