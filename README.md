@@ -19,26 +19,34 @@ You can use HotMilk in browser or server environment. Browser versions have addi
 auto-grabbing templates from &lt;script&gt; html-tags.
 
 HotMilk provides handy interface to invoke `Milk.render()` function, for example:
+``` javascript
     htmlText = HotMilk.greetings({ ... user ... });
     htmlText = HotMilk.books.list([ ... list of books ... ]);
     htmlText = HotMilk.books.details({ ... book ... });
     htmlText = HotMilk.movies.list([ ... list of movies ... ]);
+```
 
 To add a template, invoke `HotMilk.$addTemplate()` and pass it template path and template text itself:
+``` javascript
     HotMilk.$addTemplate('books/list', '... mustache template ...');
     HotMilk.$addTemplate('books/details', '... mustache template ...');
     HotMilk.$addTemplate('greetings', '... mustache template ...');
+```
 
 Partial templates have scopes: you can add partial which will be visible to only one template, or to 
 group of templates, or to all templates in your template set:
+``` javascript
     HotMilk.$addTemplate('books/list#item', '...'); // for HotMilk.books.list() only
     HotMilk.$addTemplate('books#author', '...');    // for list and details templates
     HotMilk.$addTemplate('#price', '...');          // global partial template
     // partial "overloading"
     HotMilk.$addTemplate('movies#price', '...');    // movies will have their own price format
+```
 
 You can add new template relatevely to the existing group or template:
+``` javascript
     HotMilk.movies.$addTemplate('#price', '...');   // same as above
+```
 
 Templates and partials can be added in any order, so you can load templates asynchronously.
 
@@ -50,8 +58,10 @@ will survive killing their parent and creating it again if needed).
 ### Template path restrictions ###
 
 * You cannot create a template under another one:
+    ``` javascript
         HotMilk.$addTemplate('movies', '...');
         HotMilk.$addTemplate('movies/details, '...'); // forbidden
+    ```
 
 * Each path element (template name, group name, partial name) must be correct javascript identifier: 
   contain upper- and lowercase letters, digits, underscore and dollar and don't start with digit
@@ -68,9 +78,11 @@ it supposed to mean 'HTML-embedded Milk', HoTMiLk. But later things changed and 
 just 'HotMilk'_
 
 You can write templates directly in your HTML-code as &lt;script&gt; tags:
+``` javascript
     <script type="text/x-mustache-template" data-hotmilk-path="books/list#item">
         <a href='/books/{{id}})'><b>{{title}}</b> by {{#author}}{{>author}}{{/author}}</a>
     </script>
+```
 
 Just use "text/x-mustache-template" as your script type and provide template path as 
 HTML5-data attribute "data-hotmilk-path".
