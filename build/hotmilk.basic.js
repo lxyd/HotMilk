@@ -332,10 +332,10 @@
     //  var a = new PartialsCollection();  // a: {};
     //  a.t1 = "template 1"                // a.t1 === 'template 1'; a.hasOwnProperty('t1') === true;
     //  var b = new PartialsCollection(a); // b.t1 === 'template 1'; b.hasOwnProperty('t1') === false;
-    PartialsCollection = function(parentPartials) {
+    PartialsCollection = function(parentPartialsCollection) {
         // create object which is instanceof PartialsCollection in kinda indirect way
         var ctor = function() {};
-        ctor.prototype = parentPartials || PartialsCollection.prototype;
+        ctor.prototype = parentPartialsCollection || PartialsCollection.prototype;
         return new ctor();
     };
     
@@ -527,7 +527,7 @@
     };
     
     // expand hotmilk root with some properties
-    HotMilk.$version = '1.0';
+    HotMilk.$version = '1.1';
     HotMilk.$Milk = Milk;
     
     GroupNode.prototype.$addTemplate = addTemplate;
