@@ -322,16 +322,16 @@ var Milk = {};
 // Classes
 //
 
-// Template - is just a wrapper for a string
-var Template = function(template) {
-    this.value = template;
-};
+var PartialsCollection,
+    GroupNode,
+    TemplateNode,
+    PartialTemplate;
 
 // use javascript inheritance mechanism to build a hierarchy of partial templates collections:
 //  var a = new PartialsCollection();  // a: {};
 //  a.t1 = "template 1"                // a.t1 === 'template 1'; a.hasOwnProperty('t1') === true;
 //  var b = new PartialsCollection(a); // b.t1 === 'template 1'; b.hasOwnProperty('t1') === false;
-var PartialsCollection = function(parentPartials) {
+PartialsCollection = function(parentPartials) {
     // create object which is instanceof PartialsCollection in kinda indirect way
     var ctor = function() {};
     ctor.prototype = parentPartials || PartialsCollection.prototype;
@@ -339,27 +339,43 @@ var PartialsCollection = function(parentPartials) {
 };
 
 // GroupNode may not be called like a template, it may have children groups, templates and partials
-var GroupNode = function(partials) {
+GroupNode = function(partials) {
     this.$ = partials || new PartialsCollection();
 };
 
-// Templating function: may have partials but may not have children
-var TemplateNode = function TemplateNode(template, partials) {
-    template = new Template(template);
-    // create function which is instanceof TemplateNode in kinda indirect way
-    var templatingFunction = function (data) {
-        return Milk.render(template.value, data, function(partialName) {
-            if(templatingFunction.$[partialName] && templatingFunction.$[partialName] instanceof Template) {
-                return templatingFunction.$[partialName].value;
+// creates new templating function for given template and partialsCollection
+var createTemplatingFunction = function(template, partialsCollection) {
+    return function(data) {
+        return Milk.render(template, data, function(partialName) {
+            if(partialsCollection[partialName] && partialsCollection[partialName] instanceof PartialTemplate) {
+                return partialsCollection[partialName].$value;
             } else {
                 throw new Error("Unknown partial: " + partialName);
             }
         });
     };
-    templatingFunction.$ = partials || new PartialsCollection();
+};
+
+// TemplateNode: is invokeable may have partials but may not have children
+TemplateNode = function(template, partialsCollection) {
+    partialsCollection = partialsCollection || new PartialsCollection();
+    // create function which is instanceof TemplateNode in kinda indirect way
+    var templatingFunction = createTemplatingFunction(template, partialsCollection);
+    templatingFunction.$ = partialsCollection;
     return templatingFunction;
 };
 TemplateNode.prototype = Function.prototype;
+
+// Partial template is also invokeable
+PartialTemplate = function(template, partialsCollection) {
+    partialsCollection = partialsCollection || new PartialsCollection();
+    // create function which is instanceof PartialTemplate in kinda indirect way
+    var templatingFunction = createTemplatingFunction(template, partialsCollection);
+    templatingFunction.$value = template;
+    return templatingFunction;
+};
+PartialTemplate.prototype = Function.prototype;
+
 
 // for the case user creates template 'hasOwnProperty'
 var hasOwnProperty = function(obj, propName) {
@@ -376,9 +392,9 @@ var nodeIsEmpty = function(node) {
     return true;
 };
 
-var partialsCollectionIsEmpty = function(partials) {
-    for(var c in partials) {
-        if(hasOwnProperty(partials, c) && partials[c] instanceof Template) {
+var partialsCollectionIsEmpty = function(partialsCollection) {
+    for(var c in partialsCollection) {
+        if(hasOwnProperty(partialsCollection, c) && partialsCollection[c] instanceof PartialTemplate) {
             return false;
         }
     }
@@ -460,7 +476,7 @@ var addPartialTemplate = function(root, path, partialName, template) {
     if(hasOwnProperty(node.$, partialName)) {
         throw new Error("Couldn't add partial: node " + path.join('/') + "#" + partialName + " already exists");
     }
-    node.$[partialName] = new Template(template);
+    node.$[partialName] = new PartialTemplate(template, node.$);
 };
 
 var addTemplate = function(strPath, template){
