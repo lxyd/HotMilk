@@ -1,4 +1,4 @@
-HotMilk v1.0
+HotMilk v1.1
 ============
 
 About
@@ -49,17 +49,25 @@ group of templates, or to all templates in your template set:
     HotMilk.$addTemplate('movies#price', '...');    // movies will have their own price format
 ```
 
-You can add new template relatevely to the existing group or template:
+You can add/delete template relatevely to the existing group or template:
 
 ``` javascript
     HotMilk.movies.$addTemplate('#price', '...');   // same as above
+    HotMilk.books.$removeTemplate('list');
+```
+
+Partial templates can also be invoked directly. In this case all the partials available to its parent are also available.
+Do this in the following way:
+
+``` javascript
+    AddLI(HotMilk.movies.list.$.item({ ... movie ... }));
 ```
 
 You can have any (reasonable) number of hierarchy levels (well, 'path/which/is/too/long/like/this#is' is possible but doesn't seem very usable).
 
 Templates and partials can be added in any order, so you can load templates asynchronously.
 
-Deleting templates is also possible: just call `HotMilk.$removeTemplate('path/to')`. Again, you can remove
+Deleting templates is also possible: just call `HotMilk.$removeTemplate('path/to/it')`. Again, you can remove
 templates in any order: the only one at a time will be removed leaving others untouched (even partials 
 will survive killing their parent and creating it again if needed).
 
@@ -97,6 +105,16 @@ You can write templates directly in your HTML-code as &lt;script&gt; tags:
 
 Just use "text/x-mustache-template" as your script type and provide template path as 
 HTML5-data attribute "data-hotmilk-path".
+
+If you want to add a template to several locations (e.g. date template for newspapers and
+magazines but not for books, poscards, movies, games, music etc) you can just write all the
+pathes in the 'data-hotmilk-path' attribute separating them with colon:
+
+``` html
+    <script type="text/x-mustache-template" data-hotmilk-path="newspapers#date:magazines#date">
+        {{weekOfYear}}, {{monthName}} {{year}}
+    </script>
+```
 
 
 ### Using cold Milk ###

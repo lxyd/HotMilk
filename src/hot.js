@@ -217,7 +217,7 @@ var removePartialTemplate = function(root, path, partialName) {
 };
 
 // expand hotmilk root with some properties
-HotMilk.$version = '1.0';
+HotMilk.$version = '1.1';
 HotMilk.$Milk = Milk;
 
 GroupNode.prototype.$addTemplate = addTemplate;
