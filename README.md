@@ -55,6 +55,8 @@ You can add new template relatevely to the existing group or template:
     HotMilk.movies.$addTemplate('#price', '...');   // same as above
 ```
 
+You can have any (reasonable) number of hierarchy levels (well, 'path/which/is/too/long/like/this#is' is possible but doesn't seem very usable).
+
 Templates and partials can be added in any order, so you can load templates asynchronously.
 
 Deleting templates is also possible: just call `HotMilk.$removeTemplate('path/to')`. Again, you can remove
