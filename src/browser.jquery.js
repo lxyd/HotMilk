@@ -5,16 +5,18 @@
 
     $hotmilk.bare.js$
 
-    // do export like underscore.js do:
     $.fn.HotMilk = HotMilk;
 
     // grab templates
     $(function() {
         var ss = document.getElementsByTagName('script');
         for(var i = 0; i < ss.length; i++) {
-            var s = ss[i], path;
-            if(s.type === 'text/x-mustache-template' && (path = s.getAttribute('data-hotmilk-path'))) {
-                HotMilk.$addTemplate(path, s.text);
+            var s = ss[i], paths;
+            if(s.type === 'text/x-mustache-template' && (paths = s.getAttribute('data-hotmilk-path'))) {
+                var pathsArr = paths.split(':');
+                for(var j = 0; j < pathsArr.length; j++) {
+                    HotMilk.$addTemplate(pathsArr[j], s.text);
+                }
             }
         };
     });
