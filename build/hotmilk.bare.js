@@ -323,9 +323,7 @@ var Milk = {};
 //
 
 var PartialsCollection,
-    GroupNode,
-    TemplateNode,
-    PartialTemplate;
+    GroupNode;
 
 // use javascript inheritance mechanism to build a hierarchy of partial templates collections:
 //  var a = new PartialsCollection();  // a: {};
@@ -347,7 +345,7 @@ GroupNode = function(partials) {
 var createTemplatingFunction = function(template, partialsCollection) {
     return function(data) {
         return Milk.render(template, data, function(partialName) {
-            if(partialsCollection[partialName] && partialsCollection[partialName] instanceof PartialTemplate) {
+            if(partialsCollection[partialName] && partialsCollection[partialName].$value != null) {
                 return partialsCollection[partialName].$value;
             } else {
                 throw new Error("Unknown partial: " + partialName);
@@ -357,24 +355,23 @@ var createTemplatingFunction = function(template, partialsCollection) {
 };
 
 // TemplateNode: is invokeable may have partials but may not have children
-TemplateNode = function(template, partialsCollection) {
+var createTemplateNode = function(template, partialsCollection) {
     partialsCollection = partialsCollection || new PartialsCollection();
-    // create function which is instanceof TemplateNode in kinda indirect way
     var templatingFunction = createTemplatingFunction(template, partialsCollection);
     templatingFunction.$ = partialsCollection;
+    // to keep Function.prototype clean add properties to the instance
+    templatingFunction.$addTemplate = addTemplate;
+    templatingFunction.$removeTemplate = removeTemplate;
     return templatingFunction;
 };
-TemplateNode.prototype = Function.prototype;
 
 // Partial template is also invokeable
-PartialTemplate = function(template, partialsCollection) {
+var createPartialTemplate = function(template, partialsCollection) {
     partialsCollection = partialsCollection || new PartialsCollection();
-    // create function which is instanceof PartialTemplate in kinda indirect way
     var templatingFunction = createTemplatingFunction(template, partialsCollection);
     templatingFunction.$value = template;
     return templatingFunction;
 };
-PartialTemplate.prototype = Function.prototype;
 
 
 // for the case user creates template 'hasOwnProperty'
@@ -384,8 +381,8 @@ var hasOwnProperty = function(obj, propName) {
 
 var nodeIsEmpty = function(node) {
     for(var c in node) {
-        // if node has ownProperty of type TemplateNode or GroupNode - this node is not empty
-        if(hasOwnProperty(node, c) && (node[c] instanceof TemplateNode || node[c] instanceof GroupNode)) {
+        // if node has ownProperty and this is a template or a TemplateGroup - this node is not empty
+        if(c.charAt(0) != '$' && hasOwnProperty(node, c)) {
             return false;
         }
     }
@@ -394,7 +391,7 @@ var nodeIsEmpty = function(node) {
 
 var partialsCollectionIsEmpty = function(partialsCollection) {
     for(var c in partialsCollection) {
-        if(hasOwnProperty(partialsCollection, c) && partialsCollection[c] instanceof PartialTemplate) {
+        if(hasOwnProperty(partialsCollection, c)) {
             return false;
         }
     }
@@ -426,7 +423,7 @@ var nodeBuildPath = function(node, path) {
 // which contain no TemplateNodes nor partials 
 var nodeCleanPath = function(node, path) {
     if(!path || path.length < 1) {
-        throw new Error("Couldn't clean: path is empty");
+        return;
     }
     if(!node || !hasOwnProperty(node, path[0]) || !(node[path[0]] instanceof GroupNode)) {
         throw new Error("Couldn't clean: node does not esist or is not cleanable");
@@ -444,11 +441,11 @@ var HotMilk = new GroupNode();
 
 var pathRe = /^((?:[a-zA-Z_][a-zA-Z0-9$_]*\/)*[a-zA-Z_][a-zA-Z0-9$_]*)?(?:#([a-zA-Z$_][a-zA-Z0-9$_]*))?$/;
 var parsePath = function(pathStr) {
-	var res = pathRe.exec(pathStr);
-	return res && (res[1] || res[2]) ? {
-		path: res[1] ? res[1].split('/') : [],
-		partialName: res[2] || null /* '', null, undefined -> null */
-	} : null;
+    var res = pathRe.exec(pathStr);
+    return res && (res[1] || res[2]) ? {
+        path: res[1] ? res[1].split('/') : [],
+        partialName: res[2] || null /* '', null, undefined -> null */
+    } : null;
 };
 
 var addNormalTemplate = function(root, path, template) {
@@ -461,13 +458,13 @@ var addNormalTemplate = function(root, path, template) {
         // if node already exists but was created only to attach a partial, we can replace it with our template
         // NOTE: partials from existing node are moved to new TemplateNode
         if(node[name] instanceof GroupNode && nodeIsEmpty(node[name])) {
-            node[name] = new TemplateNode(template, node[name].$);
+            node[name] = createTemplateNode(template, node[name].$);
         } else {
             throw new Error("Couldn't add template: node " + path.join('/') + " already exists");
         }
     } else {
         // NOTE: new templating node will have partials derived from its parent node's partials
-        node[name] = new TemplateNode(template, new PartialsCollection(node.$));
+        node[name] = createTemplateNode(template, new PartialsCollection(node.$));
     }
 };
 
@@ -476,7 +473,7 @@ var addPartialTemplate = function(root, path, partialName, template) {
     if(hasOwnProperty(node.$, partialName)) {
         throw new Error("Couldn't add partial: node " + path.join('/') + "#" + partialName + " already exists");
     }
-    node.$[partialName] = new PartialTemplate(template, node.$);
+    node.$[partialName] = createPartialTemplate(template, node.$);
 };
 
 var addTemplate = function(strPath, template){
@@ -531,5 +528,3 @@ HotMilk.$Milk = Milk;
 
 GroupNode.prototype.$addTemplate = addTemplate;
 GroupNode.prototype.$removeTemplate = removeTemplate;
-TemplateNode.prototype.$addTemplate = addTemplate;
-TemplateNode.prototype.$removeTemplate = removeTemplate;
