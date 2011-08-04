@@ -533,7 +533,7 @@
     
     GroupNode.prototype.$addTemplate = addTemplate;
     GroupNode.prototype.$removeTemplate = removeTemplate;
-
+    
 
     // do export like underscore.js do:
     if (typeof module !== 'undefined' && module.exports) {

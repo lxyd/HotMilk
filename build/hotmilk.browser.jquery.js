@@ -533,6 +533,7 @@
     
     GroupNode.prototype.$addTemplate = addTemplate;
     GroupNode.prototype.$removeTemplate = removeTemplate;
+    
 
     $.fn.HotMilk = HotMilk;
 
