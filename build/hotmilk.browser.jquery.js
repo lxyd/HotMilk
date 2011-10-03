@@ -535,7 +535,7 @@
     GroupNode.prototype.$removeTemplate = removeTemplate;
     
 
-    $.fn.HotMilk = HotMilk;
+    $.HotMilk = HotMilk;
 
     // grab templates
     $(function() {
@@ -545,7 +545,7 @@
             if(s.type === 'text/x-mustache-template' && (paths = s.getAttribute('data-hotmilk-path'))) {
                 var pathsArr = paths.split(':');
                 for(var j = 0; j < pathsArr.length; j++) {
-                    HotMilk.$addTemplate(pathsArr[j], s.text);
+                    HotMilk.$addTemplate(pathsArr[j], s.text.replace(/^\s*([\S\s]*?)\s*$/, '$1'));
                 }
             }
         };
